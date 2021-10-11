@@ -6,7 +6,9 @@ const { User } = require("../../models");
 // GET api/users
 router.get("/", (req, res) => {
   // access our User model and run .findAll() a Model class method || equivalent to SQL query SELECT * FROM users;
-  User.findAll()
+  User.findAll({
+      attributes: { exclude: ['password']}
+  })
     .then((dbUserData) => res.json(dbUserData))
     .catch((err) => {
       console.log(err);
@@ -18,6 +20,7 @@ router.get("/", (req, res) => {
 router.get("/:id", (req, res) => {
   // equivalent to SELECT * FROM users WHERE id =1
   User.findOne({
+    attributes: { exclude: ['password']},
     where: {
       id: req.params.id,
     },
