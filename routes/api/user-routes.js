@@ -7,7 +7,7 @@ const { User } = require("../../models");
 router.get("/", (req, res) => {
   // access our User model and run .findAll() a Model class method || equivalent to SQL query SELECT * FROM users;
   User.findAll({
-      attributes: { exclude: ['password']}
+      //attributes: { exclude: ['password']}
   })
     .then((dbUserData) => res.json(dbUserData))
     .catch((err) => {
@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
 router.get("/:id", (req, res) => {
   // equivalent to SELECT * FROM users WHERE id =1
   User.findOne({
-    attributes: { exclude: ['password']},
+    //attributes: { exclude: ['password']},
     where: {
       id: req.params.id,
     },
@@ -59,6 +59,7 @@ router.put("/:id", (req, res) => {
   // expects {username: '', email: '', password: '',} || UPDATE users SET username ='' WHERE id = '';
   // pass in req.body to provide the new data we want to use
   User.update(req.body, {
+    individualHooks: true,
     where: {
       // indicates exactly where this new data is to be used
       id: req.params.id,
