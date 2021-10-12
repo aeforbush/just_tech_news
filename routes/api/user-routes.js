@@ -7,7 +7,7 @@ const { User } = require("../../models");
 router.get("/", (req, res) => {
   // access our User model and run .findAll() a Model class method || equivalent to SQL query SELECT * FROM users;
   User.findAll({
-      //attributes: { exclude: ['password']}
+    //attributes: { exclude: ['password']}
   })
     .then((dbUserData) => res.json(dbUserData))
     .catch((err) => {
@@ -52,6 +52,32 @@ router.post("/", (req, res) => {
       console.log(err);
       res.status(500).json(err);
     });
+});
+
+router.post("/login", (req, res) => {
+  // query operation
+  // exprects {email: '', password '',}
+  // findOne sequelize method looks for a user with a specified email
+  User.findOne({
+    where: {
+      email: req.body.email,
+    },
+  }).then((dbUserData) => {
+    if (!dbUserData) {
+      res.status(400).json({ message: "No user with that email address." });
+      return;
+    }
+
+    // verify User
+    const validPassword = dbUserData.checkPassword(req.body.password);
+    // control statement
+    if (!validPassword) {
+      res.status(400).json({ message: "Incorrect password." });
+      return;
+    }
+    // if successful we can call checkPassword in User.js which is on the dbUserData object
+    res.json({ user: dbUserData, message: "You are now logged in!" });
+  });
 });
 
 // PUT api/users/1 (Updating)
