@@ -12,6 +12,6 @@ app.use(express.urlencoded({extended: true}));
 app.use(routes);
 
 // turn on connection to db and server || "sync" means that this Sequelize takes the models and connects them to the associatd db tables (creating it for you!)
-sequelize.sync({ force: false }).then(() => {
+sequelize.sync({ force: true }).then(() => {
     app.listen(PORT, () => console.log('Now listening'));
 });
