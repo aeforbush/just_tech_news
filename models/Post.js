@@ -3,9 +3,30 @@ const sequelize = require("../config/connection");
 
 // create Post model
 class Post extends Model {
-  // indicates upvote isn't an instance method, rather it's based on the Post model 
+  // indicates upvote isn't an instance method, rather it's based on the Post model
   static upvote(body, models) {
-
+    return models.Vote.create({
+      user_id: body.user_id,
+      post_id: body.post.post_id,
+    }).then(() => {
+      return Post.findOne({
+        where: {
+          id: body.post_id,
+        },
+        attributes: [
+          "id",
+          "post_url",
+          "title",
+          "created_at",
+          [
+            sequelize.literal(
+              "(SELECT COUNT (*) FROM vote WHERE post.id = vote.post_id"
+            ),
+            "vote_count",
+          ],
+        ],
+      });
+    });
   }
 }
 
