@@ -1,6 +1,7 @@
 const User = require('./User');
 const Post = require('./Post');
 const Vote = require('./Vote');
+const Comment = require('./Comment');
 
 
 // creates a link between the id column in User to the corresponding foreign key pair which is the user_id in the Post model
@@ -41,10 +42,26 @@ Post.hasMany(Vote, {
     foreignKey: 'post_id'
 });
 
+Comment.belongsTo(User, {
+    foreignKey: 'user_id'
+});
+
+Comment.belongsTo(Post, {
+    foreignKey: 'post_id'
+});
+
+User.hasMany(Comment, {
+    foreignKey: 'user_id'
+});
+
+Post.hasMany(Comment, {
+    foreignKey: 'post_id'
+});
+
     
 
 
 
 
 // exporting an object with User as a property | created class User (new model) to inherit the functionality of the Model class ( CRUD )
-module.exports = {User, Post, Vote};
+module.exports = {User, Post, Vote, Comment};
