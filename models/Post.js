@@ -2,7 +2,12 @@ const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../config/connection");
 
 // create Post model
-class Post extends Model {}
+class Post extends Model {
+  // indicates upvote isn't an instance method, rather it's based on the Post model 
+  static upvote(body, models) {
+
+  }
+}
 
 // create fields/columns for Post model
 Post.init(

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { User } = require("../../models");
+const { User, Post, Vote } = require("../../models");
 
 // API architectural pattern called REST aka Representational State Transfer (RESTful APIs) || Uses HTTP methods like GET POST PUT DELETE || Uses status codes 400, 404 and 500 || Uses descriptive endpoints
 
@@ -7,7 +7,7 @@ const { User } = require("../../models");
 router.get("/", (req, res) => {
   // access our User model and run .findAll() a Model class method || equivalent to SQL query SELECT * FROM users;
   User.findAll({
-    attributes: { exclude: ['password']}
+    attributes: { exclude: ["password"] },
   })
     .then((dbUserData) => res.json(dbUserData))
     .catch((err) => {
@@ -24,6 +24,18 @@ router.get("/:id", (req, res) => {
     where: {
       id: req.params.id,
     },
+    include: [
+      {
+        model: Post,
+        attributes: ["id", "title", "post-url", "created_at"],
+      },
+      {
+        model: Post,
+        attributes: ["title"],
+        through: Vote,
+        as: "voted_posts",
+      },
+    ],
   })
     // if nothing is returned function
     .then((dbUserData) => {
