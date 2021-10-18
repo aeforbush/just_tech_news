@@ -6,6 +6,9 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+console.log("====================");
+console.log(req.body);
+console.log("====================");
     Comment.create({
         comment_text: req.body.comment_text,
         user_id: req.body.user_id,
