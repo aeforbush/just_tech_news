@@ -37,7 +37,10 @@ router.get("/", (req, res) => {
         console.log(dbPostData[0])
         console.log("======================")
       // pass a single post object into the homepage template
-      res.render("homepage", dbPostData[0]);
+      // .get({plain}) serialize the object down to only the properties needed / res.json() does it automatically
+      const posts = dbPostData.map(post => post.get({plain: true}));
+      // passing the iterated array to an object into the template
+      res.render("homepage", {posts});
       
     })
     .catch((err) => {
