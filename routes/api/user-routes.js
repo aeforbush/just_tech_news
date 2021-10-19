@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { User, Post, Vote } = require("../../models");
+const { User, Post, Vote, Comment } = require("../../models");
 
 // API architectural pattern called REST aka Representational State Transfer (RESTful APIs) || Uses HTTP methods like GET POST PUT DELETE || Uses status codes 400, 404 and 500 || Uses descriptive endpoints
 
@@ -20,6 +20,7 @@ router.get("/", (req, res) => {
 router.get("/:id", (req, res) => {
   // equivalent to SELECT * FROM users WHERE id =1
   User.findOne({
+    attributes: { exclude: ["password"] },
     //attributes: { exclude: ['password']},
     where: {
       id: req.params.id,
@@ -27,7 +28,16 @@ router.get("/:id", (req, res) => {
     include: [
       {
         model: Post,
-        attributes: ["id", "title", "post-url", "created_at"],
+        attributes: ["id", "title", "post_url", "created_at"],
+      },
+      // including the Comment model here:
+      {
+        model: Comment,
+        attributes: ["id", "comment_text", "created_at"],
+        include: {
+          model: Post,
+          attributes: ["title"],
+        },
       },
       {
         model: Post,
