@@ -1,12 +1,13 @@
 // dependencies (models and packages)
 const sequelize = require("../../config/connection");
 const router = require("express").Router();
-const { Post, User, Vote } = require("../../models");
+const { Post, User, Vote, Comment } = require("../../models");
 
 // get all users
 router.get("/", (req, res) => {
   Post.findAll({
     // query configuration
+    order: [["created_at", "DESC"]],
     attributes: [
       "id",
       "post_url",
@@ -19,16 +20,24 @@ router.get("/", (req, res) => {
         "vote_count",
       ],
     ],
-    order: [["created_at", "DESC"]],
-    // include is the same as SQL JOIN
     include: [
+      // include the comment model here:
+      {
+        model: Comment,
+        attributes: ["id", "comment_text", "post_id", "user_id", "created_at"],
+        include: {
+          model: User,
+          attributes: ["username"],
+        },
+      },
+
       {
         model: User,
         attributes: ["username"],
       },
     ],
   })
-  .then((dbPostData) => res.json(dbPostData))
+    .then((dbPostData) => res.json(dbPostData))
     .catch((err) => {
       console.log(err);
       res.status(500).json(err);
@@ -53,6 +62,16 @@ router.get("/:id", (req, res) => {
       ],
     ],
     include: [
+      // include the comment model here:
+      {
+        model: Comment,
+        attributes: ["id", "comment_text", "post_id", "user_id", "created_at"],
+        include: {
+          model: User,
+          attributes: ["username"],
+        },
+      },
+
       {
         model: User,
         attributes: ["username"],
@@ -89,15 +108,14 @@ router.post("/", (req, res) => {
 
 // PUT /api/posts/upvote || this needs to be above the id PUT route
 router.put("/upvote", (req, res) => {
-// custom static method created in models/Post.js to make code dryer here in post-routes
-Post.upvote(req.body, {Vote})
-      .then((updatePostData) => res.json(updatePostData))
-      .catch((err) => {
-        console.log(err);
-        res.status(400).json(err);
-      });
-  });
-
+  // custom static method created in models/Post.js to make code dryer here in post-routes
+  Post.upvote(req.body, { Vote })
+    .then((updatePostData) => res.json(updatePostData))
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
+});
 
 router.put("/:id", (req, res) => {
   Post.update(
