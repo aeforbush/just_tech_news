@@ -3,7 +3,7 @@ const { User, Post, Vote, Comment } = require("../../models");
 
 // API architectural pattern called REST aka Representational State Transfer (RESTful APIs) || Uses HTTP methods like GET POST PUT DELETE || Uses status codes 400, 404 and 500 || Uses descriptive endpoints
 
-// GET api/users
+// GET  all users api/users
 router.get("/", (req, res) => {
   // access our User model and run .findAll() a Model class method || equivalent to SQL query SELECT * FROM users;
   User.findAll({
@@ -68,12 +68,20 @@ router.post("/", (req, res) => {
     username: req.body.username,
     email: req.body.email,
     password: req.body.password,
-  })
-    .then((dbUserData) => res.json(dbUserData))
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
+    // session is created first then run when the call back is complete
+  }).then((dbUserData) => {
+    req.session.save(() => {
+      req.session.user_id = dbUserData.id;
+      req.session.username = dbUserData.username;
+      req.session.loggedIn = true;
+
+      res.json(dbUserData);
     });
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json(err);
+  })
 });
 
 router.post("/login", (req, res) => {
@@ -97,9 +105,25 @@ router.post("/login", (req, res) => {
       res.status(400).json({ message: "Incorrect password." });
       return;
     }
-    // if successful we can call checkPassword in User.js which is on the dbUserData object
-    res.json({ user: dbUserData, message: "You are now logged in!" });
+    req.session.save(() => {
+      // delcare session variables
+      req.session.user_id = dbUserData.id;
+      req.session.username = dbUserData.username;
+      req.session.loggedIn = true;
+      // if successful we can call checkPassword in User.js which is on the dbUserData object
+      res.json({ user: dbUserData, message: "You are now logged in!" });
+    });
   });
+});
+
+router.post("/logout", (req, res) => {
+  if (req.session.loggedIn) {
+    req.session.destroy(() => {
+      res.status(204).end();
+    });
+  } else {
+    res.status(404).end();
+  }
 });
 
 // PUT api/users/1 (Updating)

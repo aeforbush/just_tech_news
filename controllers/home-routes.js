@@ -1,9 +1,9 @@
 // contains all of the user-facing routes such as homepage and login
 const router = require("express").Router();
 const sequelize = require("../config/connection");
-const { Post, User, Comment } = require("../models");
+const { Post, User, Comment, Vote } = require("../models");
 
-
+// GET all posts from homepage
 router.get("/", (req, res) => {
   Post.findAll({
     attributes: [
@@ -34,15 +34,11 @@ router.get("/", (req, res) => {
     ],
   })
     .then((dbPostData) => {
-        console.log("======================")
-        console.log(dbPostData[0])
-        console.log("======================")
       // pass a single post object into the homepage template
       // .get({plain}) serialize the object down to only the properties needed / res.json() does it automatically
-      const posts = dbPostData.map(post => post.get({plain: true}));
+      const posts = dbPostData.map((post) => post.get({ plain: true }));
       // passing the iterated array to an object into the template
-      res.render("homepage", {posts});
-      
+      res.render("homepage", { posts });
     })
     .catch((err) => {
       console.log(err);
@@ -50,10 +46,12 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get('/login', (req, res) => {
-    res.render('login');
+router.get("/login", (req, res) => {
+  if (req.session.loggedIn) {
+    res.redirect("/");
+    return;
+  }
+  res.render("login");
 });
-
-
 
 module.exports = router;

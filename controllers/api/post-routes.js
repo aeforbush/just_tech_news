@@ -1,6 +1,6 @@
 // dependencies (models and packages)
-const sequelize = require("../../config/connection");
 const router = require("express").Router();
+const sequelize = require("../../config/connection");
 const { Post, User, Vote, Comment } = require("../../models");
 
 // get all users
@@ -97,7 +97,7 @@ router.post("/", (req, res) => {
     title: req.body.title,
     // req.body populates columns
     post_url: req.body.post_url,
-    user_id: req.body.user_id,
+    user_id: req.session.user_id,
   })
     .then((dbPostData) => res.json(dbPostData))
     .catch((err) => {
@@ -109,7 +109,7 @@ router.post("/", (req, res) => {
 // PUT /api/posts/upvote || this needs to be above the id PUT route
 router.put("/upvote", (req, res) => {
   // custom static method created in models/Post.js to make code dryer here in post-routes
-  Post.upvote(req.body, { Vote })
+  Post.upvote({...req.body, user_id: req.session.user_id}, { Vote, Comment, User })
     .then((updatePostData) => res.json(updatePostData))
     .catch((err) => {
       console.log(err);

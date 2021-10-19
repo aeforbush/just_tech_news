@@ -1,17 +1,15 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../config/connection");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 // create our User model // user inherits all the functionality the Model class has
 // create User model
 class User extends Model {
-    // ste up method to run on instance data (per user) to check password
-    checkPassword(loginPw) {
-        return bcrypt.compareSync(loginPw, this.password);
-    }
+  // ste up method to run on instance data (per user) to check password
+  checkPassword(loginPw) {
+    return bcrypt.compareSync(loginPw, this.password);
+  }
 }
-
-
 
 // use init method to initialize the model's data and configuration, passing in two objects as arguments || define table column and configuration (defines how inherited methods should work)
 User.init(
@@ -51,29 +49,31 @@ User.init(
       validate: {
         // this means the password must be at least four characters long
         len: [4],
-      }
-    }
+      },
+    },
   },
   {
     hooks: {
-        
-        // beforeCreate executes the bcrypt hash function on the plaintext pw || passing in userData object || the hashed pw is passed to the Promise object as a newUserData object || userData is prehash newUserData is posthash || clunky so use "async/await"
-        // beforeCreate(userData) {
-        //     return bcrypt.hash(userData.password, 10).then(newUserData => {
-        //         return newUserData
-        //     });
-        // }
+      // beforeCreate executes the bcrypt hash function on the plaintext pw || passing in userData object || the hashed pw is passed to the Promise object as a newUserData object || userData is prehash newUserData is posthash || clunky so use "async/await"
+      // beforeCreate(userData) {
+      //     return bcrypt.hash(userData.password, 10).then(newUserData => {
+      //         return newUserData
+      //     });
+      // }
 
-        // set up beforeCreate lifecycle "hook" functionality
-        async beforeCreate(newUserData) {
-            newUserData.password = await bcrypt.hash(newUserData.password, 10);
-            return newUserData;
-        },
-        // set up beforeUpdate lifecycle "hook" functionality
-        async beforeUpdate(updatedUserData) {
-            updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
-            return updatedUserData;
-        }
+      // set up beforeCreate lifecycle "hook" functionality
+      async beforeCreate(newUserData) {
+        newUserData.password = await bcrypt.hash(newUserData.password, 10);
+        return newUserData;
+      },
+      // set up beforeUpdate lifecycle "hook" functionality
+      async beforeUpdate(updatedUserData) {
+        updatedUserData.password = await bcrypt.hash(
+          updatedUserData.password,
+          10
+        );
+        return updatedUserData;
+      },
     },
     // table configuration options fo here (https://sequelize.org/v5/manual/models-definition.html#configuration))
 
@@ -89,7 +89,5 @@ User.init(
     modelName: "user",
   }
 );
-
-
 
 module.exports = User;
