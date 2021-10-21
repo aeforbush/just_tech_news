@@ -89,7 +89,8 @@ router.get("/post/:id", (req, res) => {
    }
 
    // serialize the data
-   const post = dbPostData({ plain: true });
+   // why didn't we use map() here?
+   const post = dbPostData.get({ plain: true });
 
    // pass data to template
    res.render('single-post', { post });
