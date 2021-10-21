@@ -56,10 +56,7 @@ router.get("/:id", (req, res) => {
       "created_at",
       [
         sequelize.literal(
-          "(SELECT COUNT (*) FROM vote WHERE post.id = vote.post_id)"
-        ),
-        "vote_count",
-      ],
+          "(SELECT COUNT (*) FROM vote WHERE post.id = vote.post_id)"), "vote_count"]
     ],
     include: [
       // include the comment model here:
