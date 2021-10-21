@@ -36,7 +36,7 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
       // there cannot be any duplicate email values in this table
-      unqiue: true,
+      unique: true,
       // if allowNull is set to false, we can run our data through validation
       validate: {
         isEmail: true,
