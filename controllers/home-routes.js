@@ -38,7 +38,10 @@ router.get("/", (req, res) => {
       // .get({plain}) serialize the object down to only the properties needed / res.json() does it automatically
       const posts = dbPostData.map((post) => post.get({ plain: true }));
       // passing the iterated array to an object into the template
-      res.render("homepage", { posts });
+      res.render("homepage", {
+        posts,
+        loggedIn: req.session.loggedIn,
+      });
     })
     .catch((err) => {
       console.log(err);
@@ -97,7 +100,10 @@ router.get("/post/:id", (req, res) => {
       const post = dbPostData.get({ plain: true });
 
       // pass data to template
-      res.render("single-post", { post });
+      res.render("single-post", {
+        post,
+        loggedIn: req.session.loggedIn,
+      });
     })
     .catch((err) => {
       console.log(err);
