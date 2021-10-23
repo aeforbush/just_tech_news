@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { User, Post, Vote, Comment } = require("../../models");
 
+
 // API architectural pattern called REST aka Representational State Transfer (RESTful APIs) || Uses HTTP methods like GET POST PUT DELETE || Uses status codes 400, 404 and 500 || Uses descriptive endpoints
 
 // GET  all users api/users
