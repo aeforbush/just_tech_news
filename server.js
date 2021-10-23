@@ -26,6 +26,7 @@ const hbs = exphbs.create({ helpers });
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 
+// at a high level, middleware is just a function that executes before the function that sends the response back
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // express.static() method takes all the content of a folder and serves them as static assets
