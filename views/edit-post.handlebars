@@ -21,11 +21,10 @@
   <div>
     <textarea name="comment-body"></textarea>
   </div>
-    {{/if}}
-
+  {{#if loggedIn}}
     {{> comments post.comments}}
-
-    {{#if loggedIn}}
+  {{/if}}
+    
   <div>
     <button type="submit">add comment</button>
   </div>
