@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const sequelize = require("../config/connection");
-const { Post, User, Comment } = require("../models");
+const { Post, User, Comment , Vote} = require("../models");
 // importing the auth module
 const withAuth = require("../utils/auth");
 
@@ -20,7 +20,7 @@ router.get("/", withAuth, (req, res) => {
         sequelize.literal(
           "(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)"
         ),
-        "vote_count",
+        "vote_count"
       ],
     ],
     include: [
@@ -50,10 +50,7 @@ router.get("/", withAuth, (req, res) => {
 });
 
 router.get("/edit/:id", withAuth, (req, res) => {
-  Post.findOne({
-    where: {
-      id: req.params.id,
-    },
+  Post.findByPk( req.params.id, {
     attributes: [
       "id",
       "post_url",
@@ -63,7 +60,7 @@ router.get("/edit/:id", withAuth, (req, res) => {
         sequelize.literal(
           "(SELECT COUNT (*) FROM vote WHERE post.id = vote.post_id)"
         ),
-        "vote_count",
+        "vote_count"
       ],
     ],
     include: [
@@ -82,16 +79,16 @@ router.get("/edit/:id", withAuth, (req, res) => {
     ],
   })
     .then((dbPostData) => {
-      if (!dbPostData) {
-        res.status(404).json({ message: "No post found with this id" });
-        return;
-      }
+      if (dbPostData) {
       // serialized data
       const post = dbPostData.get({ plain: true });
       res.render("edit-post", {
         post,
         loggedIn: true,
       });
+    } else {
+      res.status(404).end();
+    }
     })
     .catch((err) => {
       console.log(err);

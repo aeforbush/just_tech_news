@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
         sequelize.literal(
           "(SELECT COUNT (*) FROM vote WHERE post.id = vote.post_id)"
         ),
-        "vote_count",
+        "vote_count"
       ],
     ],
     include: [
@@ -59,7 +59,7 @@ router.get("/:id", (req, res) => {
         sequelize.literal(
           "(SELECT COUNT (*) FROM vote WHERE post.id = vote.post_id)"
         ),
-        "vote_count",
+        "vote_count"
       ],
     ],
     include: [
@@ -107,25 +107,35 @@ router.post("/", withAuth, (req, res) => {
     });
 });
 
-// PUT /api/posts/upvote || this needs to be above the id PUT route
-router.put("/upvote", withAuth, (req, res) => {
-  // console.log(req.body)
-  // make sure the session exists first
-  if (req.session) {
-    // pass session id along with all destructured properties on req.body
-    // ... is spread operator
-    // custom static method created in models/Post.js to make code dryer here in post-routes
-    Post.upvote(
-      {post_id: parseInt(req.body.post_id), user_id: req.session.user_id },
-      { Vote, Comment, User }
-    )
-      .then((updatedVoteData) => res.json(updatedVoteData))
-      .catch((err) => {
-        console.log(err);
-        res.status(400).json(err);
-      });
-    }
+router.put('/upvote', withAuth, (req, res) => {
+  // custom static method created in models/Post.js
+  Post.upvote({ ...req.body, user_id: req.session.user_id }, { Vote, Comment, User })
+    .then(updatedVoteData => res.json(updatedVoteData))
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
+
+// // PUT /api/posts/upvote || this needs to be above the id PUT route
+// router.put("/upvote", withAuth, (req, res) => {
+//   // console.log(req.body)
+//   // make sure the session exists first
+//   if (req.session) {
+//     // pass session id along with all destructured properties on req.body
+//     // ... is spread operator
+//     // custom static method created in models/Post.js to make code dryer here in post-routes
+//     Post.upvote(
+//       {post_id: parseInt(req.body.post_id), user_id: req.session.user_id },
+//       { Vote, Comment, User }
+//     )
+//       .then((updatedVoteData) => res.json(updatedVoteData))
+//       .catch((err) => {
+//         console.log(err);
+//         res.status(400).json(err);
+//       });
+//     }
+// });
 
 router.put("/:id", withAuth, (req, res) => {
   Post.update(

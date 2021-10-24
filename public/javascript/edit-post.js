@@ -1,3 +1,5 @@
+const { response } = require("express");
+
 async function editFormHandler(event) {
     event.preventDefault();
 
@@ -13,6 +15,11 @@ async function editFormHandler(event) {
           'Content-Type': 'application/json'
         }
       });
+      if(response.ok) {
+        document.location.replace('/dashboard/');
+      } else {
+        alert(response.statusText);
+      }
   
   }
   
