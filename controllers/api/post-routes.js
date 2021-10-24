@@ -109,14 +109,14 @@ router.post("/", withAuth, (req, res) => {
 
 // PUT /api/posts/upvote || this needs to be above the id PUT route
 router.put("/upvote", withAuth, (req, res) => {
-  console.log(req.body)
+  // console.log(req.body)
   // make sure the session exists first
   if (req.session) {
     // pass session id along with all destructured properties on req.body
     // ... is spread operator
     // custom static method created in models/Post.js to make code dryer here in post-routes
     Post.upvote(
-      {post_id: 16, user_id: req.session.user_id },
+      {post_id: parseInt(req.body.post_id), user_id: req.session.user_id },
       { Vote, Comment, User }
     )
       .then((updatedVoteData) => res.json(updatedVoteData))
